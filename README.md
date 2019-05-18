@@ -20,26 +20,27 @@ express --view=twig yourProjectName
 ```text
 View Success Message
 
-	{% if success %}
-		<div class="alert alert-success alert-dismissible">
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			<strong>Success!</strong> {{success}}
-		</div>
-	{% endif %}
+{% if success %}
+	<div class="alert alert-success alert-dismissible">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>Success!</strong> {{success}}
+	</div>
+{% endif %}
 
-Loop
+For Loop To Print Data
+
   {% set sn = 0 %}
-		{% for row in rows %}
-		<tr>
-				<td>  {% set sn = sn + 1 %}
-						{{ sn }}
-				</td>
-				<td>{{row.item}}</td>
-				<td>
-				<a class="btn btn-success btn-xs" href="/edit/{{row._id}}">Edit</a>
-				<a class="btn btn-danger btn-xs" href="/delete/{{row._id}}">Delete</a>
-				</td>
-		</tr>
-	{% endfor %}
+{% for row in rows %}
+<tr>
+	<td>  {% set sn = sn + 1 %}
+		{{ sn }}
+	</td>
+	<td>{{row.item}}</td>
+	<td>
+	<a class="btn btn-success btn-xs" href="/edit/{{row._id}}">Edit</a>
+	<a class="btn btn-danger btn-xs" href="/delete/{{row._id}}">Delete</a>
+	</td>
+</tr>
+{% endfor %}
 ```
 
