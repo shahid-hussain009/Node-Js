@@ -1,7 +1,5 @@
 # Node-Js-Installation
-```text 
-Install Nodejs and Monodb
-```
+
 ### To Start Mongodb just use
 ```js
 1- mongod --directoryperdb --dbpath="E:\\env\data\db" --logpath="E:\\env\data\log\mongo.log" 
