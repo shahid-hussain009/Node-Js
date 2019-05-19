@@ -6,7 +6,7 @@
 --logappend  --install
 2- net start mongodb
 ```
-### Node js with Express npm
+### Node js with Express npm (1)
 ```js
 npm init
 npm i --save express
@@ -15,6 +15,130 @@ npm i --save body-parser
 npm i --save express-messages express-session connect-flash express-validator
 npm i --save passport passport-local bcryptjs
 npm install --save mongoose-unique-validator
+
+```
+### Node js with Express App.js (2)
+```js
+const express = require('express');
+const path = require('path');
+const mongoose  = require('mongoose');
+const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
+const passport = require('passport');
+const config = require('./config/database');
+
+
+mongoose.connect(config.database,{ useNewUrlParser: true });
+
+let db = mongoose.connection;
+//connection message
+db.once('open', () => {
+    console.log('Connected to MongoDb');
+});
+//check db error
+db.on('error',(err) => {
+    console.log(err);
+});
+// Init App
+const app = express();
+
+// call Model
+let Article = require('./models/articleModel');
+
+// set view engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
+app.use(bodyParser.json());
+
+// pubic folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Express session middleware
+app.use(session({
+	secret: 'secret',
+	saveUninitialized:true,
+	resave: true
+}));
+
+app.use(flash());
+
+// Express messages middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+// Express validator middleware
+
+app.use(expressValidator({
+    errorFormatter: function(param, msg, value) {
+        var namespace = param.split('.')
+        , root    = namespace.shift()
+        , formParam = root;
+  
+      while(namespace.length) {
+        formParam += '[' + namespace.shift() + ']';
+      }
+      return {
+        param : formParam,
+        msg   : msg,
+        value : value
+      };
+    }
+  }));
+
+
+// passport config
+require('./config/passport')(passport);
+// Password middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*', (req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+});
+
+// Set route
+app.get('/', (req, res) => {
+    Article.find({}, (err, articles) => {
+        if(err)
+        {
+            console.log(err);
+        }
+        else
+        {
+            res.render('index', 
+            {
+                title: 'Home',
+                articles: articles
+            });
+        }
+    });
+    
+});
+
+
+// Include Routes
+const articles = require('./routes/article');
+const users = require('./routes/users');
+
+// Make Routes
+app.use('/articles', articles);
+app.use('/users', users);
+
+// Listen Method
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+  console.log('Express is listening on port :', port);
+});
 ```
 ### Install Express with .handlebars view engine
 ```js
