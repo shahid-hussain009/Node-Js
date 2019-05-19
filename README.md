@@ -35,7 +35,7 @@ var ArticleSchma = mongoose.Schema({
 });
 
 var Order = mongoose.model('articles', ArticleSchma);
-var firstOrder = new Order({'title': 'Why do we use it', 'auther':'Ali Khan', 'description':'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. .'});
+var firstOrder = new Order({'title': 'Why do we use it', 'auther':'Ali Khan', 'description':'description here'});
 
 conn.on('connected', () => {
     console.log('Connected Successfully');
