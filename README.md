@@ -12,10 +12,48 @@ npm init
 npm i --save express
 npm i --save nodemon -g
 npm i --save body-parser
+npm i mongoose
 npm i --save express-messages express-session connect-flash express-validator
 npm i --save passport passport-local bcryptjs
 npm install --save mongoose-unique-validator
 
+```
+### Mongodb Insert Data
+```js
+var mongoose = require('mongoose');
+//To connect local
+//mongoose.connect("mongodb://localhost:27017/database name", { useNewUrlParser: true });
+
+// To connenct Mlab
+mongoose.connect("mongodb://username:password@ds241873.mlab.com:41133/databasename", { useNewUrlParser: true });
+var conn = mongoose.connection;
+
+var ArticleSchma = mongoose.Schema({
+    title: String,
+    auther: String,
+    description: String,
+});
+
+var Order = mongoose.model('articles', ArticleSchma);
+var firstOrder = new Order({'title': 'Why do we use it', 'auther':'Ali Khan', 'description':'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. .'});
+
+conn.on('connected', () => {
+    console.log('Connected Successfully');
+});
+
+conn.on('disconnected', () => {
+    console.log('Disconnected Successfully');
+});
+
+conn.on('error', console.error.bind(console, "Error Detected"));
+
+conn.once('open', function() {
+    firstOrder.save( function(err, res) {
+        console.log('Successfully inserted', res);
+        conn.close();
+    });
+    
+});
 ```
 ### Node js with Express App.js (2)
 ```js
