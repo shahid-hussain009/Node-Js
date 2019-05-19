@@ -6,6 +6,16 @@
 --logappend  --install
 2- net start mongodb
 ```
+### Node js with Express npm
+```js
+npm init
+npm i --save express
+npm i --save nodemon -g
+npm i --save body-parser
+npm i --save express-messages express-session connect-flash express-validator
+npm i --save passport passport-local bcryptjs
+npm install --save mongoose-unique-validator
+```
 ### Install Express with .handlebars view engine
 ```js
 express yourProjectName --hbs
