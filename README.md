@@ -18,6 +18,11 @@ npm i --save passport passport-local bcryptjs
 npm install --save mongoose-unique-validator
 
 ```
+### Include Bootstrap and Js
+```js
+npm i -g bower
+bower install bootstrap
+```
 ### Mongodb Insert Data
 ```js
 var mongoose = require('mongoose');
