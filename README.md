@@ -40,7 +40,8 @@ var ArticleSchma = mongoose.Schema({
 });
 
 var Order = mongoose.model('articles', ArticleSchma);
-var firstOrder = new Order({'title': 'Why do we use it', 'auther':'Ali Khan', 'description':'description here'});
+var firstOrder = new Order({'title': 'Why do we use it', 'auther':'Ali Khan',
+'description':'description here'});
 
 conn.on('connected', () => {
     console.log('Connected Successfully');
