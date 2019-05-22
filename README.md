@@ -183,6 +183,144 @@ app.listen(port, () => {
   console.log('Express is listening on port :', port);
 });
 ```
+### Routes/article.js
+```js
+const express = require('express');
+const router = express.Router();
+
+// bring models
+let Article = require('../models/article');
+
+
+// load article
+router.get('/add', (req, res) => {
+    res.render('create',{
+        title: 'Add Article'
+    });
+});
+
+// Store Article
+router.post('/store', (req, res) => {
+
+    req.checkBody('title', 'Title is required').notEmpty();
+    req.checkBody('auther', 'Auther is required').notEmpty();
+    req.checkBody('description', 'Description is required').notEmpty();
+    // Validation error
+    let errors = req.validationErrors();
+    if(errors)
+    {
+        res.render('create', {
+            title: 'Article',
+            errors:errors
+        })
+    }
+    else
+    {
+        let article = new Article();
+        article.title = req.body.title;
+        article.auther = req.body.auther;
+        article.description = req.body.description;
+        article.save((err) =>
+        {
+            if(err)
+            {
+                console.log(err);
+                return;
+            }
+            else
+            {
+                req.flash('success', 'Article added successfully');
+                res.redirect('/');
+            }
+        });
+    }
+    
+});
+
+// view single article
+router.get('/:id', (req, res) =>{
+    Article.findById(req.params.id, (err, article) =>{
+        if(err) throw err;
+        res.render('view',{
+            article: article
+        });
+    });
+});
+
+// edit article
+router.get('/edit/:id', (req, res) =>{
+    Article.findById(req.params.id, (err, article) =>{
+        if(err) throw err;
+        res.render('edit',{
+            article: article
+        });
+    });
+});
+
+// update Article
+router.post('/update/:id', (req, res) => {
+    let article = {}; 
+    article.title = req.body.title;
+    article.auther = req.body.auther;
+    article.description = req.body.description;
+
+    let query = {_id:req.params.id};
+
+    Article.updateOne(query, article, (err) =>
+    {
+        if(err)
+        {
+            console.log('err');
+            return;
+        }
+        else
+        {
+            req.flash('success', 'Article updated successfully');
+            res.redirect('/');
+        }
+    });
+    
+});
+
+// delete
+router.delete('/delete/:id', (req, res) =>{
+    let query = {_id:req.params.id}
+
+    Article.remove(query, (err) => {
+        if(err)
+        {
+            console.log(err)
+        }
+        res.send('success');
+    })
+});
+
+module.exports = router;
+```
+
+### Models/article.js
+```js
+const mongoose = require('mongoose');
+
+let articleSchema = mongoose.Schema({
+    title:{
+        type: String,
+        required: true
+    },
+    auther:{
+        type: String,
+        required: true
+    },
+    description:{
+        type: String,
+        required: true
+    }
+});
+
+module.exports = mongoose.model('Article', articleSchema);
+
+```
+
 ### Install Express with .handlebars view engine
 ```js
 express yourProjectName --hbs
