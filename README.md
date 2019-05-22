@@ -188,24 +188,39 @@ app.listen(port, () => {
 ```js
 const express = require('express');
 const router = express.Router();
+// call Model
+let Article = require('../models/articleModel');
+let User = require('../models/userModel');
 
-// bring models
-let Article = require('../models/article');
+//add article
+router.get('/add', ensureAuthenticated, (req, res) => {
+    res.render('create', {
+        title: 'Article'
+    })
+});
 
+//get single article
 
-// load article
-router.get('/add', (req, res) => {
-    res.render('create',{
-        title: 'Add Article'
+router.get('/:id', (req, res) => {
+    Article.findById(req.params.id, (err, article) =>{
+        User.findById(article.auther, (err, user) => {
+            res.render('single-article', {
+                title: 'Single Aritcle',
+                article:article,
+                auther: user.name
+            });
+        })
+        
     });
 });
 
-// Store Article
-router.post('/store', (req, res) => {
 
+// Post article
+router.post('/add', (req, res) => {
     req.checkBody('title', 'Title is required').notEmpty();
-    req.checkBody('auther', 'Auther is required').notEmpty();
+    //req.checkBody('auther', 'Auther is required').notEmpty();
     req.checkBody('description', 'Description is required').notEmpty();
+
     // Validation error
     let errors = req.validationErrors();
     if(errors)
@@ -219,56 +234,49 @@ router.post('/store', (req, res) => {
     {
         let article = new Article();
         article.title = req.body.title;
-        article.auther = req.body.auther;
+        article.auther = req.user._id;
         article.description = req.body.description;
-        article.save((err) =>
-        {
+        article.save((err) =>{
             if(err)
             {
-                console.log(err);
+                console.log('err');
                 return;
             }
             else
             {
-                req.flash('success', 'Article added successfully');
+                req.flash('success', 'Successfully Created Article');
                 res.redirect('/');
             }
         });
     }
-    
 });
 
-// view single article
-router.get('/:id', (req, res) =>{
+//Edit article
+
+router.get('/edit/:id', ensureAuthenticated, (req, res) => {
     Article.findById(req.params.id, (err, article) =>{
-        if(err) throw err;
-        res.render('view',{
-            article: article
+        if(article.auther != req.user._id)
+        {
+            req.flash('danger', 'You are not Athuraized');
+            res.redirect('/');
+        }
+        res.render('edit-article', {
+            title: 'Edit Aritcle',
+            article:article
         });
     });
 });
 
-// edit article
-router.get('/edit/:id', (req, res) =>{
-    Article.findById(req.params.id, (err, article) =>{
-        if(err) throw err;
-        res.render('edit',{
-            article: article
-        });
-    });
-});
-
-// update Article
+// update article
 router.post('/update/:id', (req, res) => {
-    let article = {}; 
+    let article = {};
     article.title = req.body.title;
     article.auther = req.body.auther;
     article.description = req.body.description;
 
     let query = {_id:req.params.id};
 
-    Article.updateOne(query, article, (err) =>
-    {
+    Article.updateOne(query, article, (err) =>{
         if(err)
         {
             console.log('err');
@@ -276,27 +284,54 @@ router.post('/update/:id', (req, res) => {
         }
         else
         {
-            req.flash('success', 'Article updated successfully');
+            req.flash('success', 'Article Updated Successfully');
             res.redirect('/');
         }
     });
-    
 });
 
-// delete
-router.delete('/delete/:id', (req, res) =>{
-    let query = {_id:req.params.id}
+//Delete article
 
-    Article.remove(query, (err) => {
-        if(err)
+router.delete('/delete/:id', (req, res) => {
+    if(!req.user._id)
+    {
+        res.status(500).send();
+    }
+    let query = {_id:req.params.id};
+    Article.findById(req.params.id, (err, article) => {
+        if(article.auther != req.user._id)
         {
-            console.log(err)
+            res.status(500).send();
         }
-        res.send('success');
+        else
+        {
+            Article.remove(query, (err) => {
+                if(err)
+                {
+                    console.log(err);
+                }
+                res.send('success');
+            });
+        }
     })
 });
 
+
+function ensureAuthenticated(req, res ,next)
+{
+    if(req.isAuthenticated())
+    {
+        return next();
+    }
+    else
+    {
+        req.flash('danger', 'Access Deny please login to view');
+        res.redirect('/users/login');
+    }
+}
+
 module.exports = router;
+
 ```
 
 ### Models/article.js
