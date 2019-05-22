@@ -8,7 +8,7 @@
 ```
 ### Node js with Express npm (1)
 ```js
-npm init
+npm init 
 npm i --save express
 npm i --save nodemon -g
 npm i --save body-parser
