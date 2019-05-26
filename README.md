@@ -95,6 +95,10 @@ let Article = require('./models/articleModel');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+//app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs'}));
+//app.set('view engine', '.hbs');
+
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
