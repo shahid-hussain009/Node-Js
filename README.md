@@ -63,10 +63,14 @@ conn.once('open', function() {
 ```
 ### Node js with Express App.js (2)
 ```js
-const express = require('express');
-const path = require('path');
-const mongoose  = require('mongoose');
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var expressHbs = require('express-handlebars');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
@@ -74,37 +78,33 @@ const passport = require('passport');
 const config = require('./config/database');
 
 
-mongoose.connect(config.database,{ useNewUrlParser: true });
+mongoose.connect(config.database, { useNewUrlParser: true });
+var db = mongoose.connection;
 
-let db = mongoose.connection;
-//connection message
+//check db connection success msg
 db.once('open', () => {
-    console.log('Connected to MongoDb');
+    console.log('Database Connected Successfully');
 });
-//check db error
-db.on('error',(err) => {
-    console.log(err);
-});
-// Init App
-const app = express();
 
-// call Model
-let Article = require('./models/articleModel');
+//check err
+db.on('error', console.error.bind(console, "Error Detected"));
 
-// set view engine
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
 
-//app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs'}));
-//app.set('view engine', '.hbs');
+var app = express();
 
+// view engine setup
+/* app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');  */
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-// parse application/json
-app.use(bodyParser.json());
+app.engine('.hbs', expressHbs({defaultLayout: 'layout', extname: '.hbs'}));
+app.set('view engine', '.hbs');
 
-// pubic folder
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Express session middleware
@@ -115,13 +115,18 @@ app.use(session({
 }));
 
 app.use(flash());
-
+app.use(function(req, res, next){
+    res.locals.sessionFlash = req.session.sessionFlash;
+    delete req.session.sessionFlash;
+    next();
+});
 // Express messages middleware
 app.use(require('connect-flash')());
 app.use(function (req, res, next) {
   res.locals.messages = require('express-messages')(req, res);
   next();
 });
+
 
 // Express validator middleware
 
@@ -142,7 +147,6 @@ app.use(expressValidator({
     }
   }));
 
-
 // passport config
 require('./config/passport')(passport);
 // Password middleware
@@ -153,40 +157,27 @@ app.get('*', (req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
+app.use('/', indexRouter);
+app.use('/user', usersRouter);
 
-// Set route
-app.get('/', (req, res) => {
-    Article.find({}, (err, articles) => {
-        if(err)
-        {
-            console.log(err);
-        }
-        else
-        {
-            res.render('index', 
-            {
-                title: 'Home',
-                articles: articles
-            });
-        }
-    });
-    
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
 });
 
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-// Include Routes
-const articles = require('./routes/article');
-const users = require('./routes/users');
-
-// Make Routes
-app.use('/articles', articles);
-app.use('/users', users);
-
-// Listen Method
-const port = process.env.PORT || 5000;
-app.listen(port, () => {
-  console.log('Express is listening on port :', port);
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
+
+module.exports = app;
+
 ```
 ### Routes/article.js
 ```js
