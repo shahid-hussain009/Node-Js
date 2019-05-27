@@ -180,9 +180,9 @@ module.exports = app;
 
 ```
 ### Flash Message Example
-```js
-[https://stackoverflow.com/questions/48480770/nodejs-express-app-showing-flash-messages-via-handlebars](https://stackoverflow.com/questions/48480770/nodejs-express-app-showing-flash-messages-via-handlebars)
-```
+
+[https://stackoverflow.com/questions/48480770/nodejs-express-app-showing-flash-messages-via-handlebars/](https://stackoverflow.com/questions/48480770/nodejs-express-app-showing-flash-messages-via-handlebars)
+
 ### Routes/article.js
 ```js
 const express = require('express');
