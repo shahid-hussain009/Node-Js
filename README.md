@@ -364,7 +364,7 @@ express yourProjectName --hbs
 ```js
 express --view=twig yourProjectName
 ```
-### Npm commonds
+### Npm
 ```js
 npm install --save-dev -D webpack webpack-cli css-loader style-loader extract-text-webpack-plugin@next
 npm install jquery popper.js bootstrap
