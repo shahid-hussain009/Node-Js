@@ -7,7 +7,7 @@
 2- net start mongodb
 ```
 ### Use debugger in NodeJs(1)
-#### Create launch.json file and following code 
+#### Create launch.json file and add fallowing code 
 ```json
 
 {
