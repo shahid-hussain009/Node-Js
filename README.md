@@ -6,6 +6,11 @@
 --logappend  --install
 2- net start mongodb
 ```
+### Date and Time in Nodejs
+```
+const dateTime = new Date();
+dateTime.setHours(dateTime.getHours() + 5);
+```
 ### Use debugger in NodeJs(1)
 #### Create launch.json file and add fallowing code 
 ```json
