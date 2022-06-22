@@ -7,7 +7,7 @@
 2- net start mongodb
 ```
 ### Date and Time in Nodejs
-```
+```js
 const dateTime = new Date();
 dateTime.setHours(dateTime.getHours() + 5);
 ```
