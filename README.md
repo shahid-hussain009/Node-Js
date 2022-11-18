@@ -89,7 +89,9 @@ dateTime.setHours(dateTime.getHours() + 5);
         "Response_CD": "00",
     }
 
-
+```
+#### change response 
+```js
 let offerList = [];
         params.outputs.TransactionID.forEach((item, index) => {
             offerList[index] = {
@@ -118,7 +120,6 @@ let offerList = [];
             };
         })
 	
-
 ```
 
 
