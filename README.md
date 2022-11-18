@@ -65,7 +65,59 @@ dateTime.setHours(dateTime.getHours() + 5);
         }
     ]
   }
+  ```
   
+  ### Orignal Response
+```json
+"version": 1,
+    "startTimestamp": "2022-11-18T11:59:39.647+05:00",
+    "endTimestamp": "2022-11-18T11:59:39.675+05:00",
+    "outputs": {
+        "TransactionID": [
+            "03448585531150202211181159391",
+            "03448585531150202211181159392",
+            "03448585531150202211181159393",
+            "03448585531150202211181159394"
+        ],
+        "Customer_MSISDN": "03448585531",
+        "Onnet_Minutes": [
+            "450",
+            "1500",
+            "3000",
+            "50"
+        ]
+        "Response_CD": "00",
+    }
+```
+### Response Map for above response
+```json
+let offerList = [];
+        params.outputs.TransactionID.forEach((item, index) => {
+            offerList[index] = {
+                productLabel: params.outputs.Offer_Text[index],
+                offerType: "recommended",
+                discount: {
+                    discountEnabled: false,
+                    discountedDisplayPrice: "Rs. 0",
+                },
+            }
+            if (!offerList[index].attributes) {
+                offerList[index] = { ...offerList[index], attributes: [] };
+            }
+            //
+            offerList[index].attributes.push(
+                {
+                    Onnet_Minutes: params.outputs.Onnet_Minutes[index],
+                    allowanceValue: params.outputs.Onnet_Minutes[index],
+                    discountedAllowanceValue: ""
+		});
+          
+            // transaction id
+            offerList[index] = {
+                ...offerList[index],
+                transactionID: params.outputs.TransactionID[index]
+            };
+        })
 	
 
 ```
