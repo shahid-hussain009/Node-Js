@@ -67,7 +67,7 @@ dateTime.setHours(dateTime.getHours() + 5);
   }
   ```
   
-  ### Orignal Response
+  ### Orignal Response 
 ```json
 "version": 1,
     "startTimestamp": "2022-11-18T11:59:39.647+05:00",
@@ -88,9 +88,8 @@ dateTime.setHours(dateTime.getHours() + 5);
         ]
         "Response_CD": "00",
     }
-```
-### Response Map for above response
-```json
+
+
 let offerList = [];
         params.outputs.TransactionID.forEach((item, index) => {
             offerList[index] = {
